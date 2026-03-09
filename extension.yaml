@@ -1,0 +1,57 @@
+# gNode-CMS Extension
+# ====================
+#
+# Content Management System extension for gNode. Provides template rendering
+# (Tera engine with DAG dependency tracking), content storage with minification
+# and compression, manifest-driven asset bundling, and message format
+# registration with schema validation.
+#
+# This is a BASE-tier extension that ships as a default with gNode. It serves
+# as the reference implementation for the gNode extension system — if this
+# works, other extensions will too.
+#
+# Paths:
+#   Dev:  ~/gh/premium/gNode-CMS/
+#   Prod: /opt/geodineum/premium/gNode-CMS/
+
+name: cms
+display_name: Content Management System
+version: "1.0.0"
+tier: base
+description: >-
+  Template rendering with Tera engine and topology-integrated DAG tracking,
+  content storage with minification and compression, manifest-driven asset
+  bundling with background builder, and message format registration with
+  JSONSchema validation and auto-detection. Framework-agnostic — works with
+  any CMS, web framework, or background service.
+lua_libraries:
+  - gnode_asset
+rust_feature: cms
+commands:
+  # Template commands (6)
+  - render_template
+  - serve_fragment
+  - list_templates
+  - discover_similar_templates
+  - discover_templates_by_capability
+  - get_template_capabilities
+  # Content commands (4)
+  - content_store
+  - content_retrieve
+  - template_fragment
+  - asset_bundle
+  # Asset commands (8)
+  - asset_store
+  - asset_get
+  - asset_delete
+  - asset_list
+  - manifest_set
+  - manifest_get
+  - manifest_delete
+  - manifest_list
+  # Format commands (4)
+  - register_format
+  - list_formats
+  - detect_format
+  - convert_format
+enabled: true
