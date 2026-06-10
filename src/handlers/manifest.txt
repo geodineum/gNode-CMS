@@ -1,0 +1,6 @@
+# gNode-CMS handler files
+# One filename per line, copied to OUT_DIR/cms_handlers/ by build.rs
+template.rs
+content.rs
+asset.rs
+format.rs

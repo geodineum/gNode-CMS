@@ -208,7 +208,7 @@ server.register_function{
         local result_json = safe_json_encode(result)
         return result_json or '{"ok":false,"error":"encode_error"}'
     end,
-    flags = {'no-writes'}
+    flags = {}  -- Writes metrics via track_metric()
 }
 
 

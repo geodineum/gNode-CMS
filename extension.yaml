@@ -10,9 +10,8 @@
 # as the reference implementation for the gNode extension system — if this
 # works, other extensions will too.
 #
-# Paths:
-#   Dev:  ~/gh/premium/gNode-CMS/
-#   Prod: /opt/geodineum/premium/gNode-CMS/
+# Installed at /opt/geodineum/pro/gNode/gNode-CMS/ (the canonical
+# signed-extension location; see Geodineum/install.sh).
 
 name: cms
 display_name: Content Management System
@@ -54,4 +53,9 @@ commands:
   - list_formats
   - detect_format
   - convert_format
+handler_files:
+  - template.rs
+  - content.rs
+  - asset.rs
+  - format.rs
 enabled: true

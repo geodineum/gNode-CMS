@@ -2,7 +2,7 @@
 //
 // Handles: register_format, list_formats, detect_format, convert_format
 // These provide message format registration, detection, and conversion.
-// Sync handlers are feature-gated with #[cfg(feature = "format")].
+// Sync handlers are feature-gated with #[cfg(feature = "cms")].
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -85,7 +85,7 @@ pub fn register(
 // =========================================================================
 
 /// Handle 'register_format' command
-#[cfg(feature = "format")]
+#[cfg(feature = "cms")]
 pub fn handle_register_format(
     command: &Command,
     conn: &mut Connection,
@@ -104,7 +104,7 @@ pub fn handle_register_format(
     };
 
     // Try Rust native implementation first
-    #[cfg(feature = "format")]
+    #[cfg(feature = "cms")]
     {
         use crate::daemon::GNodeDaemon;
 
@@ -154,7 +154,7 @@ pub fn handle_register_format(
     }
 }
 
-#[cfg(not(feature = "format"))]
+#[cfg(not(feature = "cms"))]
 pub fn handle_register_format(
     command: &Command,
     conn: &mut Connection,
@@ -206,7 +206,7 @@ pub fn handle_register_format(
 }
 
 /// Handle 'list_formats' command
-#[cfg(feature = "format")]
+#[cfg(feature = "cms")]
 pub fn handle_list_formats(
     command: &Command,
     conn: &mut Connection,
@@ -219,7 +219,7 @@ pub fn handle_list_formats(
     }
 
     // Try Rust native implementation first
-    #[cfg(feature = "format")]
+    #[cfg(feature = "cms")]
     {
         use crate::daemon::GNodeDaemon;
 
@@ -266,7 +266,7 @@ pub fn handle_list_formats(
     }
 }
 
-#[cfg(not(feature = "format"))]
+#[cfg(not(feature = "cms"))]
 pub fn handle_list_formats(
     command: &Command,
     conn: &mut Connection,
@@ -312,7 +312,7 @@ pub fn handle_list_formats(
 }
 
 /// Handle 'detect_format' command
-#[cfg(feature = "format")]
+#[cfg(feature = "cms")]
 pub fn handle_detect_format(
     command: &Command,
     conn: &mut Connection,
@@ -373,7 +373,7 @@ pub fn handle_detect_format(
     }
 }
 
-#[cfg(not(feature = "format"))]
+#[cfg(not(feature = "cms"))]
 pub fn handle_detect_format(
     command: &Command,
     conn: &mut Connection,
@@ -425,7 +425,7 @@ pub fn handle_detect_format(
 }
 
 /// Handle 'convert_format' command
-#[cfg(feature = "format")]
+#[cfg(feature = "cms")]
 pub fn handle_convert_format(
     command: &Command,
     conn: &mut Connection,
@@ -521,7 +521,7 @@ pub fn handle_convert_format(
     }
 }
 
-#[cfg(not(feature = "format"))]
+#[cfg(not(feature = "cms"))]
 pub fn handle_convert_format(
     command: &Command,
     conn: &mut Connection,
@@ -615,7 +615,7 @@ pub fn handle_register_format_async<'a>(
         };
 
         // Try Rust native implementation first
-        #[cfg(feature = "format")]
+        #[cfg(feature = "cms")]
         {
             use crate::daemon::GNodeDaemon;
             if let Some(format_proc) = GNodeDaemon::get_format_processor_ref() {
@@ -679,7 +679,7 @@ pub fn handle_list_formats_async<'a>(
         }
 
         // Try Rust native implementation first
-        #[cfg(feature = "format")]
+        #[cfg(feature = "cms")]
         {
             use crate::daemon::GNodeDaemon;
             if let Some(format_proc) = GNodeDaemon::get_format_processor_ref() {
