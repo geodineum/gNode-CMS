@@ -69,6 +69,7 @@ pub fn register(
 
     // Command descriptors
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "asset_store",
         category: "asset",
         description: "Store an asset with optional minification and compression",
@@ -100,6 +101,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "asset_get",
         category: "asset",
         description: "Retrieve a stored asset with metadata",
@@ -127,6 +129,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "asset_delete",
         category: "asset",
         description: "Delete a stored asset and its metadata",
@@ -149,6 +152,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "asset_list",
         category: "asset",
         description: "List assets for the site with optional content type filter",
@@ -175,6 +179,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "manifest_set",
         category: "asset",
         description: "Create or update a bundle manifest definition",
@@ -213,6 +218,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "manifest_get",
         category: "asset",
         description: "Retrieve a bundle manifest definition",
@@ -235,6 +241,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "manifest_delete",
         category: "asset",
         description: "Delete a bundle manifest and its built bundle",
@@ -257,6 +264,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "manifest_list",
         category: "asset",
         description: "List all bundle manifests for the site",

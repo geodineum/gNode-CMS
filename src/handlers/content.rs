@@ -45,6 +45,7 @@ pub fn register(
 
     // Command descriptors
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "content_store",
         category: "content",
         description: "Store content with metadata and optional compression",
@@ -74,6 +75,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "content_retrieve",
         category: "content",
         description: "Retrieve stored content by key",
@@ -99,6 +101,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "template_fragment",
         category: "content",
         description: "Render a template fragment with variables",
@@ -129,6 +132,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "asset_bundle",
         category: "content",
         description: "Bundle multiple assets into a single response",

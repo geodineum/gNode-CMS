@@ -11,7 +11,7 @@ use std::pin::Pin;
 use std::future::Future;
 use redis::Connection;
 use redis::aio::MultiplexedConnection as AsyncConnection;
-use log::{debug, warn, error};
+use log::{debug, warn};
 use serde_json::{Value, json};
 use crate::daemon::Command;
 use crate::GeometricTopology;
@@ -43,6 +43,7 @@ pub fn register(
 
     // Descriptors
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "register_format",
         category: "format",
         description: "Register a custom message format schema",
@@ -52,6 +53,7 @@ pub fn register(
         async_capable: true,
     });
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "list_formats",
         category: "format",
         description: "List all registered message formats",
@@ -61,6 +63,7 @@ pub fn register(
         async_capable: true,
     });
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "detect_format",
         category: "format",
         description: "Auto-detect the format of a raw message",
@@ -70,6 +73,7 @@ pub fn register(
         async_capable: true,
     });
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "convert_format",
         category: "format",
         description: "Convert a message between registered formats",

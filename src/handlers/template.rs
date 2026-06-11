@@ -56,6 +56,7 @@ pub fn register(
 
     // Command descriptors
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "render_template",
         category: "template",
         description: "Render a Tera template with variables",
@@ -78,6 +79,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "serve_fragment",
         category: "template",
         description: "Serve a pre-rendered template fragment from cache",
@@ -100,6 +102,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "list_templates",
         category: "template",
         description: "List all registered templates",
@@ -119,6 +122,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "discover_similar_templates",
         category: "template",
         description: "Find templates similar to a given template by capability distance",
@@ -142,6 +146,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "discover_templates_by_capability",
         category: "template",
         description: "Find templates matching capability requirements",
@@ -164,6 +169,7 @@ pub fn register(
     });
 
     descriptors.push(CommandDescriptor {
+        lane: super::types::Lane::Fast,
         name: "get_template_capabilities",
         category: "template",
         description: "Get the capability vector for a specific template",
