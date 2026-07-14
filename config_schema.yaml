@@ -1,0 +1,33 @@
+# gNode-CMS extension — config_schema
+#
+# Default-shipped extension; reference implementation for extension
+# authors.
+
+component: gnode_cms
+entries:
+  - key: CMS_TEMPLATE_CACHE_SIZE
+    type: int
+    default: 256
+    mutable: true
+    description: In-process template-render cache capacity (entries).
+
+  - key: CMS_MANIFEST_REBUILD_INTERVAL_SECS
+    type: int
+    default: 30
+    mutable: true
+    description: >-
+      Background manifest-builder poll interval. Lower values detect
+      asset changes faster at the cost of CPU.
+
+  - key: CMS_COMPRESSION_LEVEL
+    type: enum
+    default: balanced
+    mutable: true
+    values: [off, fast, balanced, max]
+    description: Content-store compression preset.
+
+  - key: CMS_MINIFY
+    type: bool
+    default: true
+    mutable: true
+    description: HTML/CSS/JS minification on store.

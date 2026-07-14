@@ -19,7 +19,7 @@ use crate::integration::valkey_functions::{execute_function, execute_function_as
 use crate::integration::processor::stream_utils::current_timestamp;
 use crate::integration::{minify_safe, compress_smart, decode_and_decompress};
 
-use super::types::{CommandResult, CommandHandlerFn, AsyncCommandHandlerFn, CommandDescriptor, parse_parameters};
+use super::types::{CommandResult, CommandHandlerFn, AsyncCommandHandlerFn, CommandDescriptor, Lane, parse_parameters};
 
 /// Register all content command handlers
 pub fn register(
@@ -71,6 +71,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"content_store","params":{"key":"page/home","content":"<h1>Hello</h1>","content_type":"text/html","ttl":3600}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -96,6 +97,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"content_retrieve","params":{"key":"page/home"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -111,7 +113,7 @@ pub fn register(
                     "description": "Template variables for rendering",
                     "additionalProperties": {"type": "string"}
                 },
-                "cache_ttl": {"type": "integer", "description": "Cache TTL in seconds", "default": 7200}
+                "ttl": {"type": "integer", "description": "Cache TTL in seconds", "default": 7200}
             },
             "required": ["template_id"]
         }),
@@ -124,8 +126,9 @@ pub fn register(
                 "registered_in_topology": {"type": "boolean"}
             }
         }),
-        example: r#"{"cmd":"template_fragment","params":{"template_id":"header","variables":{"title":"Home"},"cache_ttl":3600}}"#,
+        example: r#"{"cmd":"template_fragment","params":{"template_id":"header","variables":{"title":"Home"},"ttl":3600}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -155,6 +158,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"asset_bundle","params":{"assets":["styles/main.css","styles/theme.css"]}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 }
 

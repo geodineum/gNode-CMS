@@ -26,7 +26,7 @@ use crate::GeometricTopology;
 use crate::integration::valkey_functions::execute_function;
 use crate::integration::{minify_safe, compress_smart, decode_and_decompress};
 
-use super::types::{CommandResult, CommandHandlerFn, AsyncCommandHandlerFn, CommandDescriptor, parse_parameters};
+use super::types::{CommandResult, CommandHandlerFn, AsyncCommandHandlerFn, CommandDescriptor, Lane, parse_parameters};
 
 
 /// Register all asset management command handlers
@@ -97,6 +97,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"asset_store","params":{"key":"face_0","content":"<div>Front face</div>","content_type":"text/html"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -124,6 +125,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"asset_get","params":{"key":"face_0"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -146,6 +148,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"asset_delete","params":{"key":"face_0"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -172,6 +175,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"asset_list","params":{"content_type":"text/html"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -210,6 +214,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"manifest_set","params":{"manifest_id":"main","manifest":{"layout":"cube","slot_count":6,"slots":[]}}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -232,6 +237,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"manifest_get","params":{"manifest_id":"main"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -254,6 +260,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"manifest_delete","params":{"manifest_id":"main"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -274,6 +281,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"manifest_list","params":{}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 }
 

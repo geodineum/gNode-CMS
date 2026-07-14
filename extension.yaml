@@ -6,18 +6,15 @@
 # and compression, manifest-driven asset bundling, and message format
 # registration with schema validation.
 #
-# This is a BASE-tier extension that ships as a default with gNode. It serves
-# as the reference implementation for the gNode extension system — if this
-# works, other extensions will too.
+# Shipped as the default extension with gNode. Serves as the reference
+# implementation of the gNode extension system.
 #
-# Paths:
-#   Dev:  ~/gh/premium/gNode-CMS/
-#   Prod: /opt/geodineum/premium/gNode-CMS/
+# Discovery: gNode's build.rs looks at GNODE_EXT_CMS_PATH or, failing that,
+# a sibling clone at ../gNode-CMS/ (next to the gNode repo).
 
 name: cms
 display_name: Content Management System
 version: "1.0.0"
-tier: base
 description: >-
   Template rendering with Tera engine and topology-integrated DAG tracking,
   content storage with minification and compression, manifest-driven asset
@@ -28,8 +25,9 @@ lua_libraries:
   - gnode_asset
 rust_feature: cms
 commands:
-  # Template commands (6)
+  # Template commands (7)
   - render_template
+  - render_string
   - serve_fragment
   - list_templates
   - discover_similar_templates
@@ -54,4 +52,9 @@ commands:
   - list_formats
   - detect_format
   - convert_format
+handler_files:
+  - template.rs
+  - content.rs
+  - asset.rs
+  - format.rs
 enabled: true

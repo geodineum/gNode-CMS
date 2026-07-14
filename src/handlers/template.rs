@@ -1,6 +1,6 @@
 // Template Command Handlers
 //
-// Handles: render_template, serve_fragment, list_templates, 
+// Handles: render_template, render_string, serve_fragment, list_templates,
 //          discover_similar_templates, discover_templates_by_capability,
 //          get_template_capabilities
 // These provide Tera template rendering, fragment serving, and template discovery.
@@ -21,7 +21,7 @@ use crate::integration::valkey_functions::execute_function;
 
 use super::types::{
     CommandResult, CommandDescriptor, CommandHandlerFn, AsyncCommandHandlerFn, parse_parameters,
-    fixed_vector_to_capabilities, calculate_euclidean_distance,
+    fixed_vector_to_capabilities, calculate_euclidean_distance, Lane,
 };
 
 /// Register all template command handlers
@@ -32,6 +32,7 @@ pub fn register(
 ) {
     // Sync handlers - rendering
     handlers.insert("render_template".to_string(), handle_render_template as CommandHandlerFn);
+    handlers.insert("render_string".to_string(), handle_render_string as CommandHandlerFn);
     handlers.insert("serve_fragment".to_string(), handle_serve_fragment as CommandHandlerFn);
 
     // Sync handlers - discovery (Phase 2C)
@@ -43,6 +44,8 @@ pub fn register(
     // Async handlers
     async_handlers.insert("render_template".to_string(), handle_render_template_async as AsyncCommandHandlerFn);
     async_handlers.insert("RENDER_TEMPLATE".to_string(), handle_render_template_async as AsyncCommandHandlerFn);
+    async_handlers.insert("render_string".to_string(), handle_render_string_async as AsyncCommandHandlerFn);
+    async_handlers.insert("RENDER_STRING".to_string(), handle_render_string_async as AsyncCommandHandlerFn);
     async_handlers.insert("serve_fragment".to_string(), handle_serve_fragment_async as AsyncCommandHandlerFn);
     async_handlers.insert("SERVE_FRAGMENT".to_string(), handle_serve_fragment_async as AsyncCommandHandlerFn);
     async_handlers.insert("list_templates".to_string(), handle_list_templates_async as AsyncCommandHandlerFn);
@@ -75,6 +78,30 @@ pub fn register(
         }),
         example: r#"{"cmd":"render_template","params":{"template_id":"homepage","variables":{"title":"Welcome"}}}"#,
         async_capable: true,
+        lane: Lane::Fast,
+    });
+
+    descriptors.push(CommandDescriptor {
+        name: "render_string",
+        category: "template",
+        description: "Render an ad-hoc Tera template string with variables (no pre-registration needed)",
+        params_schema: json!({
+            "type": "object",
+            "properties": {
+                "template": {"type": "string", "description": "Tera template content to render"},
+                "variables": {"type": "object", "description": "Template variables"}
+            },
+            "required": ["template"]
+        }),
+        returns_schema: json!({
+            "type": "object",
+            "properties": {
+                "html": {"type": "string", "description": "Rendered output"}
+            }
+        }),
+        example: r#"{"cmd":"render_string","params":{"template":"Hello {{ name }}!","variables":{"name":"World"}}}"#,
+        async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -97,6 +124,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"serve_fragment","params":{"fragment_id":"nav-header"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -116,6 +144,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"list_templates","params":{}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -139,6 +168,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"discover_similar_templates","params":{"template_id":"homepage","limit":5}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -161,6 +191,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"discover_templates_by_capability","params":{"capabilities":{"cacheability":0.8,"complexity":0.3},"limit":10}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 
     descriptors.push(CommandDescriptor {
@@ -183,6 +214,7 @@ pub fn register(
         }),
         example: r#"{"cmd":"get_template_capabilities","params":{"template_id":"homepage"}}"#,
         async_capable: true,
+        lane: Lane::Fast,
     });
 }
 
@@ -250,6 +282,54 @@ pub fn handle_render_template(
         "html": html,
         "template_id": params.template_id,
         "cached": params.cache_output.unwrap_or(false)
+    }))
+}
+
+/// Handle 'render_string' command - Render an ad-hoc template string
+///
+/// Unlike render_template (which renders a pre-registered template by ID),
+/// this takes raw Tera template content as a string. Used by
+/// TemplateManagerPro::render() for ad-hoc inline template rendering.
+///
+/// The Tera instance is ephemeral (created per call, not cached) — this
+/// trades a few ms of parse overhead for the ability to render arbitrary
+/// content without prior registration. For hot-path rendering of
+/// frequently-used templates, prefer register + render_template instead.
+pub fn handle_render_string(
+    command: &Command,
+    _conn: &mut Connection,
+    _topology: &Arc<RwLock<GeometricTopology>>,
+    _site_id: &str,
+    debug_mode: bool
+) -> CommandResult {
+    if debug_mode {
+        debug!("Handling render_string command: {}", command.id);
+    }
+
+    #[derive(Debug, Deserialize)]
+    struct RenderStringParams {
+        template: String,
+        variables: Option<Value>,
+    }
+
+    let params = match parse_parameters::<RenderStringParams>(command) {
+        Ok(p) => p,
+        Err(e) => return CommandResult::error(e),
+    };
+
+    let variables = params.variables.unwrap_or_else(|| json!({}));
+
+    let html = match crate::integration::template_renderer::render_string(
+        &params.template,
+        &variables,
+    ) {
+        Ok(output) => output,
+        Err(e) => return CommandResult::error(format!("Failed to render template string: {}", e)),
+    };
+
+    CommandResult::success(json!({
+        "status": "ok",
+        "html": html
     }))
 }
 
@@ -722,6 +802,48 @@ pub fn handle_render_template_async<'a>(
             "html": html,
             "template_id": params.template_id,
             "cached": params.cache_output.unwrap_or(false),
+            "async": true
+        }))
+    })
+}
+
+/// Async version of handle_render_string
+pub fn handle_render_string_async<'a>(
+    command: &'a Command,
+    _conn: &'a mut AsyncConnection,
+    _topology: &'a Arc<RwLock<GeometricTopology>>,
+    _site_id: &'a str,
+    debug_mode: bool,
+) -> Pin<Box<dyn Future<Output = CommandResult> + Send + 'a>> {
+    Box::pin(async move {
+        if debug_mode {
+            debug!("Handling async render_string command: {}", command.id);
+        }
+
+        #[derive(Debug, Deserialize)]
+        struct RenderStringParams {
+            template: String,
+            variables: Option<Value>,
+        }
+
+        let params: RenderStringParams = match serde_json::from_value(command.parameters.clone()) {
+            Ok(p) => p,
+            Err(e) => return CommandResult::error(format!("Invalid parameters: {}", e)),
+        };
+
+        let variables = params.variables.unwrap_or_else(|| json!({}));
+
+        let html = match crate::integration::template_renderer::render_string(
+            &params.template,
+            &variables,
+        ) {
+            Ok(output) => output,
+            Err(e) => return CommandResult::error(format!("Failed to render template string: {}", e)),
+        };
+
+        CommandResult::success(json!({
+            "status": "ok",
+            "html": html,
             "async": true
         }))
     })
