@@ -103,11 +103,23 @@ pub fn register(
     descriptors.push(CommandDescriptor {
         name: "template_fragment",
         category: "content",
-        description: "Render a template fragment with variables",
+        // Stores a template body and caches it; it does not render on its own.
+        // The description said "Render", while the only caller
+        // (gCore ResourceManager::storeTemplateFragment via
+        // gNodeClient::templateFragment) stores. A contract that names the
+        // wrong verb sends integrators down the wrong path.
+        description: "Store a template fragment and cache it, with variables and dependencies",
         params_schema: json!({
             "type": "object",
             "properties": {
                 "template_id": {"type": "string", "description": "Template identifier"},
+                // `content` is REQUIRED by TemplateParams below and was absent
+                // from this schema entirely, so anything built against the
+                // published contract sent a payload the handler rejects.
+                "content": {
+                    "type": "string",
+                    "description": "Template body. Sent inline, so payload size is the template's size."
+                },
                 "variables": {
                     "type": "object",
                     "description": "Template variables for rendering",
@@ -115,7 +127,7 @@ pub fn register(
                 },
                 "ttl": {"type": "integer", "description": "Cache TTL in seconds", "default": 7200}
             },
-            "required": ["template_id"]
+            "required": ["template_id", "content"]
         }),
         returns_schema: json!({
             "type": "object",
@@ -126,7 +138,7 @@ pub fn register(
                 "registered_in_topology": {"type": "boolean"}
             }
         }),
-        example: r#"{"cmd":"template_fragment","params":{"template_id":"header","variables":{"title":"Home"},"ttl":3600}}"#,
+        example: r#"{"cmd":"template_fragment","params":{"template_id":"header","content":"<header>{{ title }}</header>","variables":{"title":"Home"},"ttl":3600}}"#,
         async_capable: true,
         lane: Lane::Fast,
     });
